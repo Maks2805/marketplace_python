@@ -1,0 +1,22 @@
+<style.css>
+
+.body {
+    background-color: rgb(38, 0, 255);
+}
+
+.input {
+    background-color: rgb(0, 140, 255);
+    color: rgb(0, 36, 134);
+}
+
+.button {
+    color: darkblue;
+}
+
+.a {
+    color: rgb(13, 236, 240);
+}
+
+.h1 {
+    color: rgb(0, 157, 255);
+}
