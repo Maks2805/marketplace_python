@@ -1,0 +1,241 @@
+<register.html>
+
+{#
+register.html - шаблон для регистрации нового пользователя
+#}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+</head>
+<body>
+    <h1>Регистрация пользователя</h1>
+    <form method="POST">
+        <label for="username">Имя пользователя:</label><br>
+        <input type="text" id="username" name="username" required><br>
+        <button type="sumbit">Зарегистрироваться</button>
+    </form>
+    <p><a href="{{ url_for('index') }}">Назад к списку товаров</a></p>
+    {% with message = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>
+
+
+
+
+
+
+
+
+<product.html>
+
+{#
+product.html - шаблон для подробного просмотра товара
+#}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }}</title>
+</head>
+<body>
+    <h1>{{ product.name }}</h1>
+    <p><strong>Описание:</strong> {{ product.description or 'Нет описания' }}</p>
+    <p><strong>Цена:</strong> {{ product.price }} руб.</p>
+    <p><a href="{{ url_for('index') }}">Назад к списку товаров</a></p>
+</body>
+</html>
+
+
+
+
+
+
+
+<orders.html>
+
+{#
+orders.html - шаблон для просмотра всех заказов
+#}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Все заказы</title>
+</head>
+<body>
+    <h1>Список заказов</h1>
+    <ul>
+        {% for order in orders %}
+        <li>
+            Заказ №{{ order.id }} - пользователь: {{ order.user.username }}
+            <ul>
+                {% for item in order.order_items %}
+                <li>{{ item.product.name }} ({{ item.quantity }} шт.)</li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% else %}
+        <li>Заказов пока нет.</li>
+        {% endfor %}
+    </ul>
+    <p><a href="{{ url_for('index') }}">Назад к списку товаров</a></p>
+</body>
+</html>
+
+
+
+
+<order.html>
+
+{#
+order.html - шаблон для оформления заказа
+#}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Оформить заказ</title>
+</head>
+<body>
+    <h1>Оформить заказ</h1>
+    <form method="POST">
+        <label for="user_id">Пользователь</label>
+        <select id="user_id" name="user_id" required>
+            <option value="">Выберите пользователя</option>
+            {% for user in users %}
+            <option value="{{ user_id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select><br><br>
+        <fieldset>
+            <legend>Товары:</legend>
+            {% for product in products %}
+            <input type="checkbox" id="product_{{ product.id }}" name="product_id" value="product.id">
+            <label for="product_{{ product.id }}">{{ product.name }} ({{ product.price }} руб.)</label>
+            <input type="number" name="quantity" min="1" value="1" style="width: 50px;">
+            <br>
+            {% endfor %}
+        </fieldset>
+        <button type="submit">Оформить заказ</button>
+    </form>
+    <p><a href="{{ url_for('index') }}">Назад к списку товаров</a></p>
+    {% with message = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>
+
+
+
+
+
+
+<index.html>
+
+{#
+index.html - шаблон для вывода всех товаров
+#}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Интернет-магазин</title>
+</head>
+<body>
+    <h1>Список товаров</h1>
+    {#
+    Ссылки на регистрацию, добавления товаров и офориления заказа
+    #}
+<p>
+    <a href="{{ url_for('register') }}">Регистрация пользователя</a> |
+    <a href="{{ url_for('add_product') }}">Добавить товар</a> |
+    <a href="{{ url_for('order') }}">Оформить заказ</a> |
+    <a href="{{ url_for('orders') }}">Все заказы</a> 
+</p>
+<ul>
+    {#
+    Перебираем все товары и выводим их названия с ссылкой на подробный просмотр
+    #}
+    {% for product in products %}
+    <li>
+        <a href="{{ url_for('product_detali', product_id=product.id) }}">{{ product.name }}</a> - {{ product.price }} руб.
+    </li>
+    {% else %}
+    <li>Товаров пока нет.</li>
+    {% endfor %}
+</ul>
+    {#
+    Выводим flash-сообщения, если они есть
+    #}
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+</body>
+</html>
+
+
+
+
+
+
+<add_product.html>
+
+{# 
+add_product.html - шаблон для добавления товара
+Jinja2 - шаблонизатор, используемый Flask
+#}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить товар</title>
+</head>
+<body>
+    <form method="POST">
+        <label for="name">Название:</label>
+        <input type="text" id="name" name="name" required><br>
+        <label for="description">Описание:</label>
+        <textarea id="description" name="description" rows="3" cols="40"></textarea><br>
+        <label for="price">Цена:</label>
+        <input type="number" id="price" name="price" step="0.01" required><br>
+        <button type="submit">Добавить</button>
+    </form>
+    <p><a href="{{ url_for('index') }}">Назад к списку товаров</a></p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %} 
+</body>
+</html>
